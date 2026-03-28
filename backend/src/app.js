@@ -15,10 +15,10 @@ const messageRoutes = require('./routes/messageRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const adminRoutes = require('./routes/adminRoutes');
-const verificationRoutes = require('./routes/verificationRoutes');
-const successStoryRoutes = require('./routes/successStoryRoutes');
-const recommendationRoutes = require('./routes/recommendationRoutes');
-const searchRoutes = require('./routes/searchRoutes');
+// const verificationRoutes = require('./routes/verificationRoutes');
+// const successStoryRoutes = require('./routes/successStoryRoutes');
+// const recommendationRoutes = require('./routes/recommendationRoutes');
+// const searchRoutes = require('./routes/searchRoutes');
 
 // Import middleware
 const errorHandler = require('./middleware/errorHandler');
@@ -60,10 +60,10 @@ app.use('/api/messages', messageRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/admin', adminRoutes);
-app.use('/api/verification', verificationRoutes);
-app.use('/api/success-stories', successStoryRoutes);
-app.use('/api/recommendations', recommendationRoutes);
-app.use('/api/search', searchRoutes);
+// app.use('/api/verification', verificationRoutes);
+// app.use('/api/success-stories', successStoryRoutes);
+// app.use('/api/recommendations', recommendationRoutes);
+// app.use('/api/search', searchRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
