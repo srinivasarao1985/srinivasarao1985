@@ -4,6 +4,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { useAuthStore } from './context/authStore';
+import Navbar from './components/Navbar';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { DashboardPage } from './pages/DashboardPage';
@@ -28,18 +29,14 @@ function App() {
 
   return (
     <Router>
+      <Navbar />
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
 
-        <Route
-          path="/dashboard"
-          element={
-            <PrivateRoute>
-              <DashboardPage />
-            </PrivateRoute>
-          }
-        />
+        {/* Dashboard accessible to all users - interactions require login */}
+        <Route path="/dashboard" element={<DashboardPage />} />
+
         <Route
           path="/messages"
           element={
@@ -73,11 +70,15 @@ function App() {
           }
         />
 
+        {/* Default route - go to dashboard for browsing, login if needed */}
         <Route path="/" element={<Navigate to="/dashboard" />} />
       </Routes>
       <ToastContainer position="bottom-right" autoClose={3000} />
     </Router>
   );
+}
+
+export default App;
 }
 
 export default App;

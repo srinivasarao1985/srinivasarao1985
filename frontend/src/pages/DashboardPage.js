@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import apiClient from '../services/api';
+import { useAuthStore } from '../context/authStore';
 import { toast } from 'react-toastify';
 
 export const DashboardPage = () => {
   const [profiles, setProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { token } = useAuthStore();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchProfiles();
@@ -33,6 +37,12 @@ export const DashboardPage = () => {
   };
 
   const handleLike = async (profileId) => {
+    if (!token) {
+      toast.info('Please login to like profiles');
+      navigate('/login');
+      return;
+    }
+
     try {
       const response = await apiClient.post(`/profiles/${profileId}/like`);
       if (response.data.mutualLike) {
@@ -43,7 +53,12 @@ export const DashboardPage = () => {
       fetchProfiles();
     } catch (error) {
       console.error('Error liking profile:', error);
-      toast.error('Failed to like profile');
+      if (error.response?.status === 401) {
+        toast.error('Session expired. Please login again');
+        navigate('/login');
+      } else {
+        toast.error('Failed to like profile: ' + (error.response?.data?.message || error.message));
+      }
     }
   };
 
@@ -52,6 +67,14 @@ export const DashboardPage = () => {
   return (
     <div style={styles.container}>
       <h1 style={styles.title}>Discover Matches</h1>
+      {!token && (
+        <div style={styles.loginPrompt}>
+          <p>Sign up to start connecting with matches!</p>
+          <button onClick={() => navigate('/register')} style={styles.signupButton}>
+            Create Account
+          </button>
+        </div>
+      )}
       {profiles.length === 0 ? (
         <div style={styles.emptyState}>No profiles available</div>
       ) : (
@@ -69,9 +92,9 @@ export const DashboardPage = () => {
                 <p>{profile.location?.city}</p>
                 <button
                   onClick={() => handleLike(profile._id)}
-                  style={styles.button}
+                  style={{...styles.button, opacity: token ? 1 : 0.7}}
                 >
-                  ❤️ Like
+                  {token ? '❤️ Like' : '🔒 Login to Like'}
                 </button>
               </div>
             </div>
@@ -91,7 +114,27 @@ const styles = {
   title: {
     textAlign: 'center',
     color: '#e91e63',
+    marginBottom: '20px',
+    fontSize: '32px',
+  },
+  loginPrompt: {
+    textAlign: 'center',
+    backgroundColor: '#fff3e0',
+    padding: '20px',
+    borderRadius: '8px',
     marginBottom: '30px',
+    borderLeft: '4px solid #ff9800',
+  },
+  signupButton: {
+    marginTop: '10px',
+    padding: '10px 20px',
+    backgroundColor: '#ff9800',
+    color: 'white',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    fontSize: '16px',
+    fontWeight: 'bold',
   },
   profilesGrid: {
     display: 'grid',
@@ -122,6 +165,7 @@ const styles = {
     borderRadius: '4px',
     cursor: 'pointer',
     marginTop: '10px',
+    fontWeight: 'bold',
   },
   loading: {
     textAlign: 'center',
